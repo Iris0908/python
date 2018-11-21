@@ -4,7 +4,7 @@ import sys
 import threading
 
 
-def compute_height_old(n, parents):
+def compute_height(n, parents):
     # Replace this code with a faster implementation
     max_height = 0
     for vertex in range(n):
@@ -15,8 +15,6 @@ def compute_height_old(n, parents):
             current = parents[current]
         max_height = max(max_height, height)
     return max_height
-
-def compute_height(n:int, parents:list) ->int:
 
 
 def main():
