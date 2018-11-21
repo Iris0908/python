@@ -72,7 +72,7 @@ def process_requests(requests, buffer):
 
 
 def main():
-    fh = open('D:\\work\\python\\git\\python-project\\DS\\tests\\22', 'r')
+    fh = open('D:\\work\\python\\git\\python-project\\DS\\bcrApsenEeiQ4QpwNIMilg_6e36ef80c7a711e89f92910561823a8a_Programming-Assignment-1\\network_packet_processing_simulation\\tests\\22', 'r')
     index = 0
     requests = []
     for line in fh.readlines():
@@ -104,8 +104,6 @@ def main():
     #for response in responses:
     #    print(response.started_at if not response.was_dropped else -1)
 
-    end = time.time()
-    print(str(end))
 
 if __name__ == "__main__":
     main()
