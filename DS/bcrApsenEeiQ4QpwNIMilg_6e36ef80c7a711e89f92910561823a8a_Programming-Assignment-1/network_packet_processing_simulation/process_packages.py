@@ -12,50 +12,64 @@ class Buffer:
     def __init__(self, size):
         self.size = size
         self.finish_time = []
-        self.time = 0
+        #self.time = 0
         self.maxtime = 0
+        self.number = 0
 
     def process(self, mlist, requests, reponses):
         #1.add input node to buff.
         for arrave_time in sorted(mlist):
             while len(mlist[arrave_time]) != 0:
+                #print('self.size', self.size, len(self.finish_time), 'arrave_time', arrave_time)
                 if len(self.finish_time) < self.size:
                     #print('1 insert to self.finish_time', mlist[arrave_time][-1])
                     #self.finish_time.insert(0, mlist[arrave_time].pop())
                     self.finish_time.append(mlist[arrave_time].pop())
-                    self.time = self.time + requests[self.finish_time[-1]].time_to_process
+                    #self.time = self.time + requests[self.finish_time[-1]].time_to_process
                 else:
                     break
             if len(self.finish_time) == self.size:
                 break
 
         #self.finish_time.reverse()
-        print('4', str(time.time()))
+        #print('4', str(time.time()))
         #2.pick up one node from buff and add rest one to buff, then process
         current_time = 0
         flag = 0
-        while len(self.finish_time) != flag + 1:
-            index = self.finish_time[flag]
-            #print('3 process index', index)
-            if current_time < requests[index].arrived_at:
-                #current_time = current_time + 1
-                current_time = requests[index].arrived_at
-                #continue
-            reponses[index] = Response(False, current_time)
-            #print('4 process index', index)
-            #current_time = current_time + requests[index].time_to_process
-            #self.finish_time.pop(0)
-            flag = flag + 1
+        number = 0
+        #while len(self.finish_time) != flag:
+        while(True):
+            if self.number == number+1:
+                break
+            arrave_time = current_time
+            if len(self.finish_time) > flag:
+                number = number + 1
+                index = self.finish_time[flag]
+                #print('3 process index', index)
+                if current_time < requests[index].arrived_at:
+                    #current_time = current_time + 1
+                    current_time = requests[index].arrived_at
+                    #continue
+                reponses[index] = Response(False, current_time)
+                print('5 process index', index, current_time, flag, len(self.finish_time))
+                #current_time = current_time + requests[index].time_to_process
+                #self.finish_time.pop(0)
+                flag = flag + 1
+                current_time = current_time + requests[index].time_to_process
+            else:
+                current_time = current_time + 1
 
-            arrave_time = current_time + self.time
-            while(arrave_time < self.maxtime):
-                if arrave_time in mlist:
-                    if len(mlist[arrave_time]) != 0:
-                        self.finish_time.append(mlist[arrave_time].pop())
-                        self.time = self.time + requests[self.finish_time[-1]].time_to_process
-                        break
-                arrave_time = arrave_time + 1       
-            current_time = current_time + requests[index].time_to_process
+            #arrave_time = current_time
+            #while(arrave_time <= self.maxtime):
+            if arrave_time in mlist:
+                print('8', arrave_time, len(mlist[arrave_time]))
+                if len(mlist[arrave_time]) != 0:
+                    self.finish_time.append(mlist[arrave_time].pop())
+                    #self.time = self.time + requests[self.finish_time[-1]].time_to_process
+                    print('arrave_time', arrave_time, self.finish_time[-1])
+                    #break
+                #arrave_time = arrave_time + 1       
+            #current_time = current_time + requests[index].time_to_process
             #ret = False
             #for arrave_time in sorted(mlist):
             #    if ret == True:
@@ -101,9 +115,11 @@ def process_requests(requests, buffer):
 
 
 def main():
-    fh = open('DS/bcrApsenEeiQ4QpwNIMilg_6e36ef80c7a711e89f92910561823a8a_Programming-Assignment-1/network_packet_processing_simulation/tests/21', 'r')
+    fl = str(input())
+    fh = open('DS/bcrApsenEeiQ4QpwNIMilg_6e36ef80c7a711e89f92910561823a8a_Programming-Assignment-1/network_packet_processing_simulation/tests/'+fl, 'r')
     index = 0
     requests = []
+    n_requests = 0
     for line in fh.readlines():
         if index == 0:
             buffer_size, n_requests = map(int, line.split())
@@ -124,6 +140,7 @@ def main():
     print('1', str(time.time()))
 
     buffer = Buffer(buffer_size)
+    buffer.number = n_requests
     responses = process_requests(requests, buffer)
 
     print(str(time.time()))
@@ -131,11 +148,11 @@ def main():
     #for response in responses:
     #    print(response.started_at if not response.was_dropped else -1)
     
-    fh = open('DS/bcrApsenEeiQ4QpwNIMilg_6e36ef80c7a711e89f92910561823a8a_Programming-Assignment-1/network_packet_processing_simulation/tests/21.a', 'r')
-    index = 0
+    fh = open('DS/bcrApsenEeiQ4QpwNIMilg_6e36ef80c7a711e89f92910561823a8a_Programming-Assignment-1/network_packet_processing_simulation/tests/'+fl+'.a', 'r')
+    index = 1
     for line in fh.readlines():
-        if int(line.strip('\n')) != responses[index].started_at:
-            print('error', index, line.strip('\n'), responses[index].started_at, buffer.maxtime)
+        if int(line.strip('\n')) != int(responses[index-1].started_at):
+            print('error', index, int(line.strip('\n')), int(responses[index-1].started_at), buffer.maxtime)
             break
         index = index + 1
        
