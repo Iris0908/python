@@ -12,122 +12,45 @@ class Buffer:
     def __init__(self, size):
         self.size = size
         self.finish_time = []
-        #self.time = 0
-        self.maxtime = 0
-        self.number = 0
+        
 
-    def process(self, mlist, requests, reponses):
-        #1.add input node to buff.
-        for arrave_time in sorted(mlist):
-            while len(mlist[arrave_time]) != 0:
-                #print('self.size', self.size, len(self.finish_time), 'arrave_time', arrave_time)
-                if len(self.finish_time) < self.size:
-                    #print('1 insert to self.finish_time', mlist[arrave_time][-1])
-                    #self.finish_time.insert(0, mlist[arrave_time].pop())
-                    self.finish_time.append(mlist[arrave_time].pop())
-                    #self.time = self.time + requests[self.finish_time[-1]].time_to_process
-                else:
-                    break
-            if len(self.finish_time) == self.size:
-                break
-
-        #self.finish_time.reverse()
-        #print('4', str(time.time()))
-        #2.pick up one node from buff and add rest one to buff, then process
+    def process(self, requests, reponses):
+        head = 0
+        last = 0
+        index = 0
         current_time = 0
-        flag = 0
-        run_time = 0
-        #number = 0
-        #while len(self.finish_time) != flag:
-        while(current_time < self.maxtime or len(self.finish_time) > flag):
-            print('1 current_time', current_time, len(self.finish_time), flag, self.size)
-            #if self.number == number+1:
-            #    break
-            arrave_time = current_time
+        runtime = 0
+        while index < len(requests):
+            print(current_time, requests[index].arrived_at, runtime, head, last, index)
+            if runtime > 0:
+                runtime = runtime - 1
+            if runtime == 0:
+                if current_time != 0:
+                    if last > head:
+                        head = head + 1
 
-            if len(self.finish_time) - flag < self.size  and arrave_time in mlist:
-                print('2 current_time', current_time, len(mlist[arrave_time]), flag)
-                if len(mlist[arrave_time]) != 0:
-                    self.finish_time.append(mlist[arrave_time].pop())
-                    #self.time = self.time + requests[self.finish_time[-1]].time_to_process
-                    print('arrave_time', arrave_time, self.finish_time[-1])
+            if current_time == requests[index].arrived_at:
+                if last - head < self.size:
+                    self.finish_time.append(index)
+                    last = last + 1
+                index = index + 1
 
-            print('3 current_time', current_time, len(self.finish_time), flag)
-            if len(self.finish_time) > flag:
-                #number = number + 1
-                index = self.finish_time[flag]
-                #print('3 process index', index)
-                if current_time < requests[index].arrived_at:
-                    current_time = current_time + 1
-                    #run_time = run_time + 1
-                #    current_time = requests[index].arrived_at
-                    continue
-                if run_time < requests[index].time_to_process:
-                    run_time = run_time + 1
-                    current_time = current_time + 1
-                    continue
-                reponses[index] = Response(False, current_time)
-                print('5 process index', index, current_time, flag, len(self.finish_time))
-                #current_time = current_time + requests[index].time_to_process
-                #self.finish_time.pop(0)
-                flag = flag + 1
-                run_time = 0
-                #current_time = current_time + requests[index].time_to_process
-            #else:
+            if runtime == 0:
+                #if current_time != 0:
+                #    head = head + 1
+                if head != last:
+                    reponses[self.finish_time[head]] = Response(False, current_time)
+                    runtime = requests[self.finish_time[head]].time_to_process
+                    #head = head + 1
+
             current_time = current_time + 1
-            #run_time = run_time - 1
-            #arrave_time = current_time
-            #while(arrave_time <= self.maxtime):
-            #if arrave_time in mlist:
-            #    print('8', arrave_time, len(mlist[arrave_time]))
-            #    if len(mlist[arrave_time]) != 0:
-            #        self.finish_time.append(mlist[arrave_time].pop())
-                    #self.time = self.time + requests[self.finish_time[-1]].time_to_process
-            #        print('arrave_time', arrave_time, self.finish_time[-1])
-                    #break
-                #arrave_time = arrave_time + 1       
-            #current_time = current_time + requests[index].time_to_process
-            #ret = False
-            #for arrave_time in sorted(mlist):
-            #    if ret == True:
-            #        break
-                #if arrave_time < current_time + self.time:
-                    #continue
-                #while len(mlist[arrave_time]) != 0:
-                    #if len(self.finish_time) < self.size:
-                        #print('2 insert to self.finish_time', mlist[arrave_time][-1])
-                    #self.finish_time.append(mlist[arrave_time].pop())
-                    #self.time = self.time + requests[self.finish_time[-1]].time_to_process
-                    #ret = True
-                    #break
-                    #else:
-                    #    break
-                #if len(self.finish_time) == self.size:
-                #    break
-            
+
 
 def process_requests(requests, buffer):
     responses = []
-    mlist = {}
-    index = 0
-    for request in requests:
-        buffer.maxtime = max(buffer.maxtime, request.arrived_at)
+    for req in requests:
         responses.append(Response(True, -1))
-        if request.arrived_at in mlist:
-            mlist[request.arrived_at].append(index)
-        else:
-            mlist[request.arrived_at] = [index]
-        index = index + 1
-
-    print('2', str(time.time()))
-
-    for arrave_time in mlist:
-        mlist[arrave_time].reverse()
-
-    print('3', str(time.time()))
-
-    buffer.process(mlist, requests, responses)
-
+    buffer.process(requests, responses)
     return responses
 
 
@@ -169,7 +92,7 @@ def main():
     index = 1
     for line in fh.readlines():
         if int(line.strip('\n')) != int(responses[index-1].started_at):
-            print('error', index, int(line.strip('\n')), int(responses[index-1].started_at), buffer.maxtime)
+            print('error', index, int(line.strip('\n')), int(responses[index-1].started_at))
             break
         index = index + 1
        
