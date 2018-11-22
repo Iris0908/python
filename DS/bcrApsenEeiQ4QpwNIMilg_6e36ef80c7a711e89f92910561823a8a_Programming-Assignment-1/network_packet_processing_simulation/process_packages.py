@@ -40,18 +40,19 @@ class Buffer:
         #number = 0
         #while len(self.finish_time) != flag:
         while(current_time < self.maxtime or len(self.finish_time) > flag):
-            #print('number', self.number, number)
+            print('1 current_time', current_time, len(self.finish_time), flag, self.size)
             #if self.number == number+1:
             #    break
             arrave_time = current_time
 
             if len(self.finish_time) - flag < self.size  and arrave_time in mlist:
-                print('8', arrave_time, len(mlist[arrave_time]))
+                print('2 current_time', current_time, len(mlist[arrave_time]), flag)
                 if len(mlist[arrave_time]) != 0:
                     self.finish_time.append(mlist[arrave_time].pop())
                     #self.time = self.time + requests[self.finish_time[-1]].time_to_process
                     print('arrave_time', arrave_time, self.finish_time[-1])
 
+            print('3 current_time', current_time, len(self.finish_time), flag)
             if len(self.finish_time) > flag:
                 #number = number + 1
                 index = self.finish_time[flag]
