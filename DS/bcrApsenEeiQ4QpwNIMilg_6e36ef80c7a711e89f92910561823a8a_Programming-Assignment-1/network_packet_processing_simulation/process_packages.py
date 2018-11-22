@@ -36,37 +36,53 @@ class Buffer:
         #2.pick up one node from buff and add rest one to buff, then process
         current_time = 0
         flag = 0
-        number = 0
+        run_time = 0
+        #number = 0
         #while len(self.finish_time) != flag:
-        while(True):
-            if self.number == number+1:
-                break
+        while(current_time < self.maxtime or len(self.finish_time) > flag):
+            #print('number', self.number, number)
+            #if self.number == number+1:
+            #    break
             arrave_time = current_time
-            if len(self.finish_time) > flag:
-                number = number + 1
-                index = self.finish_time[flag]
-                #print('3 process index', index)
-                if current_time < requests[index].arrived_at:
-                    #current_time = current_time + 1
-                    current_time = requests[index].arrived_at
-                    #continue
-                reponses[index] = Response(False, current_time)
-                print('5 process index', index, current_time, flag, len(self.finish_time))
-                #current_time = current_time + requests[index].time_to_process
-                #self.finish_time.pop(0)
-                flag = flag + 1
-                current_time = current_time + requests[index].time_to_process
-            else:
-                current_time = current_time + 1
 
-            #arrave_time = current_time
-            #while(arrave_time <= self.maxtime):
-            if arrave_time in mlist:
+            if len(self.finish_time) - flag < self.size  and arrave_time in mlist:
                 print('8', arrave_time, len(mlist[arrave_time]))
                 if len(mlist[arrave_time]) != 0:
                     self.finish_time.append(mlist[arrave_time].pop())
                     #self.time = self.time + requests[self.finish_time[-1]].time_to_process
                     print('arrave_time', arrave_time, self.finish_time[-1])
+
+            if len(self.finish_time) > flag:
+                #number = number + 1
+                index = self.finish_time[flag]
+                #print('3 process index', index)
+                if current_time < requests[index].arrived_at:
+                    current_time = current_time + 1
+                    #run_time = run_time + 1
+                #    current_time = requests[index].arrived_at
+                    continue
+                if run_time < requests[index].time_to_process:
+                    run_time = run_time + 1
+                    current_time = current_time + 1
+                    continue
+                reponses[index] = Response(False, current_time)
+                print('5 process index', index, current_time, flag, len(self.finish_time))
+                #current_time = current_time + requests[index].time_to_process
+                #self.finish_time.pop(0)
+                flag = flag + 1
+                run_time = 0
+                #current_time = current_time + requests[index].time_to_process
+            #else:
+            current_time = current_time + 1
+            #run_time = run_time - 1
+            #arrave_time = current_time
+            #while(arrave_time <= self.maxtime):
+            #if arrave_time in mlist:
+            #    print('8', arrave_time, len(mlist[arrave_time]))
+            #    if len(mlist[arrave_time]) != 0:
+            #        self.finish_time.append(mlist[arrave_time].pop())
+                    #self.time = self.time + requests[self.finish_time[-1]].time_to_process
+            #        print('arrave_time', arrave_time, self.finish_time[-1])
                     #break
                 #arrave_time = arrave_time + 1       
             #current_time = current_time + requests[index].time_to_process
@@ -145,8 +161,8 @@ def main():
 
     print(str(time.time()))
 
-    #for response in responses:
-    #    print(response.started_at if not response.was_dropped else -1)
+    for response in responses:
+        print(response.started_at if not response.was_dropped else -1)
     
     fh = open('DS/bcrApsenEeiQ4QpwNIMilg_6e36ef80c7a711e89f92910561823a8a_Programming-Assignment-1/network_packet_processing_simulation/tests/'+fl+'.a', 'r')
     index = 1
