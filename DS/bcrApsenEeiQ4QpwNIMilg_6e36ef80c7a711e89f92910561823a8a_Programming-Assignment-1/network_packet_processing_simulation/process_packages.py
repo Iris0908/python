@@ -20,31 +20,44 @@ class Buffer:
         index = 0
         current_time = 0
         runtime = 0
-        while index < len(requests):
-            print(current_time, requests[index].arrived_at, runtime, head, last, index)
-            if runtime > 0:
-                runtime = runtime - 1
+        while index < len(requests) or head != last:
+            #print(index, current_time, runtime, last-head)
             if runtime == 0:
-                if current_time != 0:
-                    if last > head:
-                        head = head + 1
-
-            if current_time == requests[index].arrived_at:
-                if last - head < self.size:
-                    self.finish_time.append(index)
-                    last = last + 1
-                index = index + 1
-
-            if runtime == 0:
-                #if current_time != 0:
-                #    head = head + 1
                 if head != last:
+                    head = head + 1
+
+                if head == last:#queue is empty, add package to queue and process it
+                    if index < len(requests): 
+                        if current_time == requests[index].arrived_at:
+                            #if last - head < self.size:
+                            self.finish_time.append(index)
+                            last = last + 1
+                            #print('add to queue---', index)
+                            index = index + 1
+
+                if head != last:    
                     reponses[self.finish_time[head]] = Response(False, current_time)
                     runtime = requests[self.finish_time[head]].time_to_process
-                    #head = head + 1
+                    if runtime == 0:
+                        continue
+                    #print('process from queue---', head)
+                        
 
+            #2.add current time arrived packages to queue. 
+            while index < len(requests): 
+                if current_time == requests[index].arrived_at:
+                    if last - head < self.size:
+                        self.finish_time.append(index)
+                        last = last + 1
+                        #print('add to queue---', index)
+                    index = index + 1
+                else:
+                     break
+
+            if runtime > 0:
+                runtime = runtime - 1
             current_time = current_time + 1
-
+            #print('2---', index, current_time, runtime, head, last)
 
 def process_requests(requests, buffer):
     responses = []
@@ -77,7 +90,7 @@ def main():
     #    arrived_at, time_to_process = map(int, input().split())
     #    requests.append(Request(arrived_at, time_to_process))
 
-    print('1', str(time.time()))
+    print(str(time.time()))
 
     buffer = Buffer(buffer_size)
     buffer.number = n_requests
@@ -85,8 +98,8 @@ def main():
 
     print(str(time.time()))
 
-    for response in responses:
-        print(response.started_at if not response.was_dropped else -1)
+    #for response in responses:
+    #    print(response.started_at if not response.was_dropped else -1)
     
     fh = open('DS/bcrApsenEeiQ4QpwNIMilg_6e36ef80c7a711e89f92910561823a8a_Programming-Assignment-1/network_packet_processing_simulation/tests/'+fl+'.a', 'r')
     index = 1
