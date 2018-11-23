@@ -23,16 +23,7 @@ class Buffer:
         runtime = 0
         req_len = len(requests)
 
-        record_run = 0
-        record_process = 0
-        record_add = 0
-        record_que = 0
-        record_break = 0
-        record_runtime = 0
-
         while index < req_len or head != last:
-            record_run = record_run + 1
-            #print(index, current_time, runtime, last-head)
             if runtime == 0:
                 if head != last:
                     head = head + 1
@@ -42,17 +33,11 @@ class Buffer:
                         if current_time == requests[index].arrived_at:
                             self.finish_time.append(index)
                             last = last + 1
-                            #print('add to queue---', index)
                             index = index + 1
 
                 if head != last:    
                     reponses[self.finish_time[head]] = Response(False, current_time)
                     runtime = requests[self.finish_time[head]].time_to_process
-                    record_process = record_process + 1
-                    #if runtime == 0:
-                    #    record_runtime = record_runtime+1
-                    #    continue
-                    #print('process from queue---', head, runtime, current_time)
 
             current_time = current_time + runtime
             if index < req_len:
@@ -60,34 +45,19 @@ class Buffer:
                     current_time = current_time - runtime + 1
                     if runtime > 0:
                         runtime = runtime - 1
-                    #print(runtime, current_time, index)
                     continue
 
             runtime = 0
             #2.add current time arrived packages to queue.
             while index < req_len:
-                record_add = record_add+1 
-                #print('add to queue---', index, current_time, requests[self.finish_time[head]].time_to_process, requests[index].arrived_at)
-                #if current_time == requests[index].arrived_at:
-                #if current_time < requests[index].arrived_at:
-                #    current_time = current_time + 1
-                 #   break
                 if current_time > requests[index].arrived_at:
                     if last - head < self.size:
                         self.finish_time.append(index)
                         last = last + 1
-                        record_que = record_que+1
-                        #print('add to queue---', index)
                     index = index + 1
                 else:
-                    record_break = record_break+1
                     break
 
-            #if runtime > 0:
-            #    runtime = runtime - 1
-            #current_time = current_time + 1
-            #print('2---', index, current_time, runtime, head, last)
-        #print(record_run, record_process, record_add, record_que, record_break, record_runtime, index)
 
 def process_requests(requests, buffer):
     responses = []
