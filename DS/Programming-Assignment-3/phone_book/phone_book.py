@@ -78,7 +78,7 @@ def write_responses(result):
 
 def process_queries(queries):
     result = []
-    hash_table = Hash_table(10000000)
+    hash_table = Hash_table(10000003)
     # Keep list of all existing (i.e. not deleted yet) contacts.
     for cur_query in queries:
         if cur_query.type == 'add':
