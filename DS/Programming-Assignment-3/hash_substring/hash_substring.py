@@ -40,6 +40,7 @@ def get_occurrences(pattern, text):
     #    if ans == hash_key and text[i:i + length] == pattern
     #]
 
+
 if __name__ == '__main__':
     print_occurrences(get_occurrences(*read_input()))
 
